@@ -1,0 +1,36 @@
+-----Supports-----
+- Utterance Expansion
+  * Support expansion-points that just turn into multiple iterations of the same intent
+  * Support some standard expansion points for things like please
+  * Don't break support for standard slots and literal slots
+  * Support blank expansion slots (don't use anything there, make it optional)
+  * Supports some built-in expansion slots
+    - [PLEASE]
+    - [YES]
+    - [NO]
+    - [NEXT]
+    - [CANCEL]
+    - [STOP]
+    - [REPEAT]
+    - [HELP]
+
+-----Example-----
+[please] please
+[please] if you would
+[please] por favor
+[please] 
+
+LaunchIntent play a game
+LaunchIntent manage my kingdom
+LaunchIntent manage my fiefdom
+
+BuyIntent buy {acresCnt} {acres} {please}
+
+
+----Future Work-----
+- Better support for \r\n line breaks
+- Allow for recursive expansion points
+  [please] please
+  [please]
+  [doaction] go [please]
+  [doaction] do it [please]
