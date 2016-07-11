@@ -24,7 +24,7 @@ LaunchIntent play a game
 LaunchIntent manage my kingdom
 LaunchIntent manage my fiefdom
 
-BuyIntent buy {acresCnt} {acres} {please}
+BuyIntent buy {acresCnt} acres [please]
 
 
 ----Future Work-----

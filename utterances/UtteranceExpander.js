@@ -10,6 +10,7 @@ module.exports = function(input){
   // 0) Tokenize into lines
   // 1) Do a first pass and pull out all of the expansion point definitions
   // 2) A second pass and insert in all of the expansion points
+  if(Buffer.isBuffer(input)) input = input.toString('utf8');
 
   var parsed = parseExpansions(input,builtInExpansions)
     , expansions = parsed[0]
@@ -42,7 +43,7 @@ function parseExpansions(input, extendExpansions) {
 
 function emitPermuations(emit,lineAnatomy,offset,partial) {
   if(offset < 0)  {
-    emit.push(partial);
+    emit.push(partial.trim());
     return;
   }
   var wiggler = lineAnatomy[offset];

@@ -1,4 +1,4 @@
-- Do utterance expansion
++ Do utterance expansion
 - Validate utterances. No duplicates
 - Push interaction models from the standard format
 - Validate interaction model schemas

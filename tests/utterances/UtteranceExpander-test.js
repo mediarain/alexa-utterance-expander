@@ -1,8 +1,8 @@
 var assert = require('chai').assert
-  , sut = require('../../utterances/UtteranceCompiler')
+  , sut = require('../../utterances/UtteranceExpander')
 ;
 
-describe('UtteranceCompiler',function(){
+describe('UtteranceExpander',function(){
   itIs('Passes through samples with no expansion points'
     ,'LaunchIntent go for it\nLaunchIntent make it happen'
     ,'LaunchIntent go for it\nLaunchIntent make it happen');
@@ -29,7 +29,7 @@ describe('UtteranceCompiler',function(){
 
   itIs('Supports optional expansion points'
     ,'[please] please\n[please]\nLaunchIntent go for it [please]\nLaunchIntent make it happen'
-    ,'LaunchIntent go for it please\nLaunchIntent go for it \nLaunchIntent make it happen');
+    ,'LaunchIntent go for it please\nLaunchIntent go for it\nLaunchIntent make it happen');
 
   itIs('Keeps natural line breaks'
     ,'LaunchIntent go for it\n\nLaunchIntent make it happen'
@@ -41,7 +41,7 @@ describe('UtteranceCompiler',function(){
 
   itIs('Uses the built in expansion slots'
     ,'LaunchIntent go for it [PLEASE]'
-    ,'LaunchIntent go for it please\nLaunchIntent go for it ');
+    ,'LaunchIntent go for it please\nLaunchIntent go for it');
 
   function itIs(name, input, exptected){
     it(name, function(){

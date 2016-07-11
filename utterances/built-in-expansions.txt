@@ -168,12 +168,9 @@
 [REPEAT] what
 [REPEAT] what did you say
 [REPEAT] what was that
-REPEAT] what's that
+[REPEAT] what's that
 
 [STOP] all done
-[STOP] cancel please
-[STOP] cancel that
-[STOP] cancel that please
 [STOP] close
 [STOP] complete
 [STOP] done
@@ -203,6 +200,9 @@ REPEAT] what's that
 [CANCEL] cancel
 [CANCEL] never mind
 [CANCEL] forget it
+[CANCEL] cancel please
+[CANCEL] cancel that
+[CANCEL] cancel that please
 
 [STARTOVER] start over
 [STARTOVER] restart
