@@ -1,21 +1,19 @@
 {
-  "name": "alexa-definition-author",
+  "name": "alexa-utterance-expander",
   "version": "1.0.0",
-  "description": "Helpers for defining an alexa skill",
+  "description": "Compiles short-hand notation for alexa utterances into exhaustive utterances needed by Alexa ",
   "main": "index.js",
   "directories": {
-    "doc": "docs",
     "test": "tests"
   },
   "scripts": {
-    "test": "test"
+    "test": "mocha tests/*.js"
   },
-  "author": "Mitchell Harris",
+  "author": "Mitchell Harris @ Rain",
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.3.5",
     "chai": "^3.5.0",
     "lodash": "^4.11.1",
-    "mocha": "^2.4.5",
+    "mocha": "^2.4.5"
   }
 }
