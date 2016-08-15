@@ -1,7 +1,0 @@
-+ Do utterance expansion
-- Validate utterances. No duplicates
-- Push interaction models from the standard format
-- Validate interaction model schemas
-- Pull down interaction models in a standard-ish format
-- Pull & push skill definitions
-- Diff two different interaction models

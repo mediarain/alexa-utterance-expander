@@ -1,5 +1,5 @@
 var assert = require('chai').assert
-  , sut = require('../../utterances/UtteranceExpander')
+  , sut = require('../UtteranceExpander')
 ;
 
 describe('UtteranceExpander',function(){
