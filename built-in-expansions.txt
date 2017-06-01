@@ -250,7 +250,6 @@
 [HELP] please open the help menu
 [HELP] please take me to the help menu 
 [HELP] please tell me about this skill
-[HELP] please tell me about this skill 
 [HELP] please tell me help options
 [HELP] please tell me how can i use you
 [HELP] please tell me how do i do this
