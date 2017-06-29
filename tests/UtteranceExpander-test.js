@@ -50,6 +50,13 @@ describe('UtteranceExpander',function(){
     })
   }
 
+  it('does not carry extension of built in intents over multiple executions',function(){
+      var actual = sut(`[PLEASE] YOOO\nBlahIntent blah [PLEASE]`);
+      assert.include(actual,'YOOO');
+      var actual2 = sut(`BlahIntent blah [PLEASE]`);
+      assert.notInclude(actual2,'YOOO');
+  })
+
   describe('Parse Line Anatomy',function(){
     it('Parses the line anatomy',function(){
       var actual = sut.parseLineAnatomy("LaunchIntent blah [blah] foo [blah] bat",{blah: [1,2,3]});

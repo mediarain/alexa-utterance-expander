@@ -1,6 +1,6 @@
 {
   "name": "alexa-utterance-expander",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "Compiles short-hand notation for alexa utterances into exhaustive utterances needed by Alexa ",
   "main": "index.js",
   "directories": {
@@ -11,9 +11,22 @@
   },
   "author": "Mitchell Harris @ Rain",
   "license": "MIT",
-  "dependencies": {
-    "chai": "^3.5.0",
-    "lodash": "^4.11.1",
-    "mocha": "^2.4.5"
-  }
+  "dependencies": {},
+  "devDependencies": {
+    "mocha": "^2.4.5",
+    "chai": "^3.5.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mediarain/alexa-utterance-expander.git"
+  },
+  "keywords": [
+    "alexa",
+    "interaction",
+    "utterance"
+  ],
+  "bugs": {
+    "url": "https://github.com/mediarain/alexa-utterance-expander/issues"
+  },
+  "homepage": "https://github.com/mediarain/alexa-utterance-expander#readme"
 }

@@ -1,10 +1,8 @@
-var EXAPANSION_POINT_DEF = /^\[([^\]]*)\](.*)$/
-  , EXAPANSION_POINT = /\[([^\]]+)\]/
-  , _ = require('lodash')
-  , fs = require('fs')
-  , path = require('path')
-  , builtInExpansions = parseExpansions(fs.readFileSync(path.join(__dirname,'built-in-expansions.txt'),'utf8'))[0]
-;
+var EXAPANSION_POINT_DEF = /^\[([^\]]*)\](.*)$/;
+var EXAPANSION_POINT = /\[([^\]]+)\]/;
+var fs = require('fs');
+var txtBuiltIns = fs.readFileSync(__dirname+'/built-in-expansions.txt','utf8');
+var builtInExpansions = parseExpansions(txtBuiltIns)[0];
 
 module.exports = function(input){
   // 0) Tokenize into lines
@@ -24,8 +22,16 @@ module.exports = function(input){
   return filled.join('\n');
 }
 
+function cloneExpansions(expansions) {
+  var clone = {};
+  for(let key in expansions) {
+    clone[key] = expansions[key].concat([]);
+  }
+  return clone;
+}
+
 function parseExpansions(input, extendExpansions) {
-  var expansions = _.cloneDeep(extendExpansions || {})
+  var expansions = cloneExpansions(extendExpansions || {})
     , lines = input.split(/\r\n|\r|\n/g)
   ;
 
