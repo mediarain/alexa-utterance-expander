@@ -43,6 +43,14 @@ describe('UtteranceExpander',function(){
     ,'LaunchIntent go for it [PLEASE]'
     ,'LaunchIntent go for it please\nLaunchIntent go for it');
 
+  itIs('Recursively expands expansions that use other expansions'
+    ,`[baz] woot\n[bar] [baz]\n[foo] [bar]\nLaunchIntent [foo]`
+    ,'LaunchIntent woot');
+
+  itIs('Recursively expands expansions that use other expansions when there are several options'
+    ,`[baz] woot\n[baz] booyah\n[bar] [baz]\n[foo] [bar]\n[foo] etc\nLaunchIntent [foo]`
+    ,'LaunchIntent woot\nLaunchIntent booyah\nLaunchIntent etc');
+
   function itIs(name, input, exptected){
     it(name, function(){
       var actual = sut(input);
@@ -56,6 +64,23 @@ describe('UtteranceExpander',function(){
       var actual2 = sut(`BlahIntent blah [PLEASE]`);
       assert.notInclude(actual2,'YOOO');
   })
+
+  describe('Parse Line Expansion',function(){
+    it('parses expansions recursively',function(){
+      var [aexpansions, aextracted] = sut.parseExpansions("[baz] woot\n[bar] [baz]\n[foo] [bar]\nLaunchIntent [foo]");
+      //console.log('Got expansions: ',JSON.stringify(aexpansions,null,2))
+      assert.deepEqual(aexpansions,{'foo': ['woot'],'bar': ['woot'], 'baz': ['woot']});
+      assert.deepEqual(aextracted,['LaunchIntent [foo]']);
+    })
+
+    it('parses expansions recursively and uses permutations',function(){
+      var [aexpansions, aextracted] = sut.parseExpansions("[baz] woot\n[baz] booyah\n[bar] [baz]\n[foo] [bar]\nLaunchIntent [foo]");
+      //console.log('Got expansions: ',JSON.stringify(aexpansions,null,2))
+      assert.deepEqual(aexpansions,{'foo': ['woot','booyah'],'bar': ['woot','booyah'], 'baz': ['woot','booyah']});
+      assert.deepEqual(aextracted,['LaunchIntent [foo]']);
+    })
+
+  });
 
   describe('Parse Line Anatomy',function(){
     it('Parses the line anatomy',function(){

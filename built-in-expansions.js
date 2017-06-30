@@ -1,4 +1,4 @@
-[PLEASE] please
+module.exports = `[PLEASE] please
 [PLEASE]
 
 [YES] absolutely
@@ -334,3 +334,4 @@
 [HELP] what questions can i ask
 [HELP] learn more about this skill
 [HELP] teach me more about this skill 
+`
