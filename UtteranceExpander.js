@@ -94,7 +94,7 @@ function emitLinePermuations(emit, line, expansions) {
 
 function emitPermuations(emit,lineAnatomy,offset,partial) {
   if(offset < 0)  {
-    emit.push(partial.trim());
+    emit.push(partial.trim().replace(/ +/g,' '));
     return;
   }
   var wiggler = lineAnatomy[offset];

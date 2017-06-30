@@ -51,6 +51,10 @@ describe('UtteranceExpander',function(){
     ,`[baz] woot\n[baz] booyah\n[bar] [baz]\n[foo] [bar]\n[foo] etc\nLaunchIntent [foo]`
     ,'LaunchIntent woot\nLaunchIntent booyah\nLaunchIntent etc');
 
+  itIs('Empty slots don\'t leave ghost spaces'
+    , `[blank] \n[blank] bar\nLaunchIntent woot [blank] woot`
+    , 'LaunchIntent woot woot\nLaunchIntent woot bar woot');
+
   function itIs(name, input, exptected){
     it(name, function(){
       var actual = sut(input);
