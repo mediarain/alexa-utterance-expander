@@ -1,0 +1,95 @@
+<html>
+  <head>
+    <title>Alexa Utterance Expander</title>
+    <link rel="stylesheet" href="css/styles.css">
+  <head>
+  <body>
+    <a href="https://github.com/mediarain/alexa-utterance-expander"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"></a>
+    <h1>Utterance Expander</h1>
+    <div id="root" v-bind:class="{error: error}" >
+      <div class="hpanel" style="height: 500px;">
+        <editor v-model="src"></editor>
+        <div class="gutter collapser" @click="toggleCollapse">
+          <span class="icon"> {{toggleDir}} </span>
+        </div>
+        <editor id="dest" v-if="!collapsed" v-model="dest" disabled="true"></editor>
+      </div>
+      <h3>Tutorial</h3>
+      <ul class="horizontal">
+        <li><a href="#" @click="loadExample('introduction')">Introduction</a></li>
+        <li><a href="#" @click="loadExample('slots')">Slots</a></li>
+        <li><a href="#" @click="loadExample('optionals')">Optionals</a></li>
+        <li><a href="#" @click="loadExample('recursion')">Recursion</a></li>
+        <li><a href="#" @click="loadExample('complicated')">Putting it together</a></li>
+      </ul>
+    </div>
+
+    <div class="docs">
+      <h2>What is this?</h2>
+      <p>Write your Amazon Alexa utterances file in a simple-to-use DSL, and compile it to the full utternaces. Re-use placeholders, and let the compiler handle the work of creating the many variations.</p>
+      <h2>Install</h2>
+      <pre><code class="bash">npm install alexa-utterance-expander</code></pre>
+      <h2>Usage</h2>
+      <p>
+Require the library.
+      <pre><code class="javascript">const UtteranceExpander = require('alexa-utterance-expander');</code></pre>
+      And pass in code with square brackets to be expanded:
+      <div class="hpanel">
+      <pre><code>console.log(UtteranceExpander(`
+[game] game
+[game] match
+[game] round
+ 
+[play] play
+[play] start
+ 
+LaunchIntent [play] a [game]
+`));</code></pre>
+        <div class="gutter"></div>
+      <pre><code style="min-height: 182px;">LaunchIntent play a game
+LaunchIntent play a match
+LaunchIntent play a round
+LaunchIntent start a game
+LaunchIntent start a match
+LaunchIntent start a round</code></pre>
+      </div>
+<p>
+Some built-in placeholders
+<ul>
+  <li>PLEASE</li>
+  <li>YES</li>
+  <li>NO</li>
+  <li>NEXT</li>
+  <li>REPEAT</li>
+  <li>STOP</li>
+  <li>CANCEL</li>
+  <li>STARTOVER</li>
+  <li>HELP</li>
+</ul>
+
+<h2>From Gulp</h2>
+<pre><code class="javascript">gulp.task('compile', function (cb) {
+  fs.readFile('utterances-src.txt'),function(err,file){
+    if(err) return cb(err);
+    var expanded = UtteranceExpaander(file);
+    fs.writeFile('utterances.txt',expanded,cb);
+  });
+});</code></pre>
+</div>
+
+
+<script src="lib/codemirror/lib/codemirror.js"></script>
+<script src="lib/codemirror/addon/mode/simple.js"></script>
+    <link rel="stylesheet" href="lib/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="lib/codemirror/theme/dracula.css">
+    <script src="js/utterance-mode.js"></script>
+    <link rel="stylesheet" href="lib/highlight/styles/dracula.css">
+
+    <script src="lib/highlight/highlight.pack.js"></script>
+
+
+    <script src="lib/vue.js"></script>
+    <script src="lib/UtteranceExpander.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

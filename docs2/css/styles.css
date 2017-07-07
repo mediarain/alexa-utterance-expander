@@ -1,0 +1,82 @@
+body {
+  background-color: #222;
+  color: white;
+  font-family: "Courier New";
+  padding: 20px;
+  font-size: 1.2em;
+}
+
+h1 {
+  text-align: center;
+  font-size: 3em;
+  margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.hpanel > *:not(.gutter) {
+  flex-grow: 1;
+  flex-shrink: 1;
+  flex-basis: 100px;
+  font-family: "Courier New";
+  min-width: 100px;
+}
+
+.hpanel {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.hpanel > .gutter {
+  width: 25px;
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+#root.error #dest .CodeMirror {
+  border: 3px solid red;
+  background-color: #FAA;
+}
+
+pre {
+  padding 10px 0;
+}
+
+code.hljs {
+  padding: 20px;
+  background: #333;
+}
+
+.collapser {
+  text-align:center;
+  background-color: #444;
+  cursor: pointer;
+}
+.collapser:hover {
+  background-color: #888;
+}
+
+.collapser  .icon{ 
+  transform: translateY(50%);
+  display: block;
+  height: 100%;
+  margin-top: -50%;
+}
+#root .CodeMirror-gutters {
+  background-color: #2d2d2d !important;
+}
+#root .CodeMirror {
+  background-color: #333 !important;
+}
+.hpanel .CodeMirror {
+  height: inherit;
+  background-color: #333 !important;
+}
+
+ul.horizontal > li {
+  display: inline;
+}
+
+a {
+  color: #99B;
+}

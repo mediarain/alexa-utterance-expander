@@ -1,4 +1,136 @@
-module.exports = `[PLEASE] please
+(function(){
+
+var EXAPANSION_POINT_DEF = /^\[([^\]]*)\](.*)$/;
+var EXAPANSION_POINT = /\[([^\]]+)\]/;
+var txtbuildInUtterances = getBuiltIns();
+var builtInExpansions = parseExpansions(txtbuildInUtterances)[0];
+//var builtInExpansions = {}
+
+if(typeof require === 'function') {
+  module.exports = UtteranceExpander;
+}
+else {
+  window.UtteranceExpander = UtteranceExpander;
+}
+
+UtteranceExpander.parseLineAnatomy = parseLineAnatomy;
+UtteranceExpander.parseExpansions = parseExpansions;
+
+function UtteranceExpander(input){
+  // 0) Tokenize into lines
+  // 1) Do a first pass and pull out all of the expansion point definitions
+  // 2) A second pass and insert in all of the expansion points
+  if(typeof Buffer != 'undefined' && Buffer.isBuffer(input)) input = input.toString('utf8');
+
+  var [expansions, extracted ] = parseExpansions(input,builtInExpansions)
+  var filled = extracted.reduce(function(emit,line){
+        emitLinePermuations(emit,line.txt,expansions,line.lineNum);
+        return emit;
+      },[])
+  ;
+  return filled.join('\n');
+}
+
+/// Clones an expansion object since it could be mutated when extending
+function cloneExpansions(expansions) {
+  var clone = {};
+  for(let key in expansions) {
+    clone[key] = expansions[key].concat([]);
+  }
+  return clone;
+}
+
+// When parsing expansions, we should continue to do it over and over again until we get it to settle.
+// That is, until all of the expansion definitions do not have other expansions in them
+
+/// Parses a text stream into an expansions object. This is pass one of a two pass parser.
+/// This pass pulls out what the value of all of the expansion options are. return [0]
+/// Also pulls out all of the lines that are not expansion divisions for later parsing return[1]
+function parseExpansions(input, extendExpansions) {
+  var expansions = cloneExpansions(extendExpansions || {})
+    , lines = input.split(/\r\n|\r|\n/g)
+  ;
+
+  var extracted = lines.reduce(function(emit,line,i){
+    line = line.replace(/\/\/.*/,'');
+    var match = line.match(EXAPANSION_POINT_DEF)
+    if(!match){ emit.push({txt: line, lineNum: i+1}); return emit; }
+    var expPoint = match[1]
+      , option = match[2].trim();
+    expansions[expPoint] = expansions[expPoint] || [];
+    expansions[expPoint].push({txt: option, lineNum: i+1});
+    return emit;
+  },[]);
+
+  expansions = recursivelySettleExpansions(expansions,0)
+  return [expansions, extracted];
+}
+
+function recursivelySettleExpansions(expansions,depth) {
+  if(depth > 10) throw new Error(`Expansions may not reference themselves more than 100 times. That's just too deep man.`);
+  var foundExpansion = false;
+  let nextExpansions = {}
+  for(let expKey in expansions) {
+    var perms = [];
+    for(let {txt, lineNum } of expansions[expKey]) {
+      let outPerms = [];
+      emitLinePermuations(outPerms,txt,expansions,lineNum);
+      outPerms.forEach(x => perms.push({txt: x, lineNum}));
+    }
+      /*
+      //foundExpansions = foundExpansion || (expandCount > 0);
+      console.log(`Key: ${expKey} Clause: ${clause} Expand Cnt: ${expandCount} | ${foundExpansions}`)
+      */
+    nextExpansions[expKey] = perms;
+    var foundExpansion = foundExpansion || JSON.stringify(expansions[expKey]) != JSON.stringify(perms); // An easy way to do deem compare. Did anything change?
+  }
+  //console.log(`Converted ${expansions} to ${nextExpansions} and needsMore? ${foundExpansion}`)
+  if(foundExpansion) return recursivelySettleExpansions(nextExpansions,depth+1);
+  return nextExpansions;
+}
+
+function emitLinePermuations(emit, line, expansions, lineNum) {
+  let lineAnatomy = parseLineAnatomy(line,expansions, lineNum);
+  emitPermuations(emit ,lineAnatomy,lineAnatomy.length-1,'');
+  return lineAnatomy.length;
+}
+
+function emitPermuations(emit,lineAnatomy,offset,partial) {
+  if(offset < 0)  {
+    emit.push(partial.trim().replace(/ +/g,' '));
+    return;
+  }
+  var wiggler = lineAnatomy[offset];
+  for(var i =0; i<wiggler.length;++i) {
+    emitPermuations(emit,lineAnatomy,offset-1,wiggler[i] + partial);
+  }
+}
+
+// parses a line with some expansions into an array of things that should combinate.
+// LaunchIntent blah [blah] foo [blah] bat => [['LaunchIntent blah '],[1,2,3],[' foo '],[1,2,3],[' bat']]
+function parseLineAnatomy(line,expansions,lineNum) {
+  var lineAnatomy = []
+    , offset = 0
+    , match = line.match(EXAPANSION_POINT)
+  ;
+  if(!match){  return [[line]]; }
+  while(match) {
+    var prior = line.substring(0,match.index);
+    if(prior) lineAnatomy.push([prior]);
+    var expansion = expansions[match[1]];
+    if(!expansion) throw new Error(`No definitions for [${match[1]}] on line ${lineNum}`)
+    lineAnatomy.push(expansion.map(x => x.txt));
+    line = line.substring(match.index + match[0].length)
+    match = line.match(EXAPANSION_POINT);
+  }
+  if(line) lineAnatomy.push([line]);
+  return lineAnatomy;
+}
+
+
+function getBuiltIns() {
+  return `
+[PLEASE] please
 [PLEASE]
 
 [YES] absolutely
@@ -102,7 +234,7 @@ module.exports = `[PLEASE] please
 [NEXT] continue the list please
 [NEXT] continue with list
 [NEXT] continue with list please
-[NEXT] continue with the list 
+[NEXT] continue with the list
 [NEXT] continue with the list please
 [NEXT] don't stop
 [NEXT] go forward
@@ -122,7 +254,7 @@ module.exports = `[PLEASE] please
 [NEXT] next please
 [NEXT] skip
 [NEXT] skip please
-[NEXT] skip that one 
+[NEXT] skip that one
 [NEXT] skip that one please
 [NEXT] the one after
 [NEXT] the one after please
@@ -144,7 +276,7 @@ module.exports = `[PLEASE] please
 [REPEAT] once more please
 [REPEAT] one more time
 [REPEAT] one more time please
-[REPEAT] play it again 
+[REPEAT] play it again
 [REPEAT] play it again please
 [REPEAT] please repeat
 [REPEAT] please repeat that
@@ -157,13 +289,13 @@ module.exports = `[PLEASE] please
 [REPEAT] say it again please
 [REPEAT] say that again
 [REPEAT] say that again please
-[REPEAT] tell me again 
+[REPEAT] tell me again
 [REPEAT] tell me again please
 [REPEAT] tell me once more
 [REPEAT] tell me once more please
 [REPEAT] try it again
 [REPEAT] try it again please
-[REPEAT] wait 
+[REPEAT] wait
 [REPEAT] wait what
 [REPEAT] what
 [REPEAT] what did you say
@@ -248,7 +380,7 @@ module.exports = `[PLEASE] please
 [HELP] please help me
 [HELP] please offer help options
 [HELP] please open the help menu
-[HELP] please take me to the help menu 
+[HELP] please take me to the help menu
 [HELP] please tell me about this skill
 [HELP] please tell me help options
 [HELP] please tell me how can i use you
@@ -282,7 +414,7 @@ module.exports = `[PLEASE] please
 [HELP] please tell me what do you do
 [HELP] please tell me what questions can i ask
 [HELP] please tell more more about what I can do
-[HELP] tell me about this skill 
+[HELP] tell me about this skill
 [HELP] tell me about this skill please
 [HELP] tell me how can i use you
 [HELP] tell me how can i use you please
@@ -333,5 +465,7 @@ module.exports = `[PLEASE] please
 [HELP] what do you do
 [HELP] what questions can i ask
 [HELP] learn more about this skill
-[HELP] teach me more about this skill 
-`
+[HELP] teach me more about this skill
+  `
+}
+})();
