@@ -1,6 +1,6 @@
 {
   "name": "alexa-utterance-expander",
-  "version": "1.0.8",
+  "version": "1.1.0",
   "description": "Compiles short-hand notation for alexa utterances into exhaustive utterances needed by Alexa ",
   "main": "index.js",
   "directories": {

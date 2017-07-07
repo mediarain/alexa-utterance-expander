@@ -20,11 +20,11 @@ function UtteranceExpander(input){
   // 0) Tokenize into lines
   // 1) Do a first pass and pull out all of the expansion point definitions
   // 2) A second pass and insert in all of the expansion points
-  if(Buffer.isBuffer(input)) input = input.toString('utf8');
+  if(typeof Buffer != 'undefined' && Buffer.isBuffer(input)) input = input.toString('utf8');
 
   var [expansions, extracted ] = parseExpansions(input,builtInExpansions)
   var filled = extracted.reduce(function(emit,line){
-        emitLinePermuations(emit,line,expansions);
+        emitLinePermuations(emit,line.txt,expansions,line.lineNum);
         return emit;
       },[])
   ;
@@ -51,13 +51,14 @@ function parseExpansions(input, extendExpansions) {
     , lines = input.split(/\r\n|\r|\n/g)
   ;
 
-  var extracted = lines.reduce(function(emit,line){
+  var extracted = lines.reduce(function(emit,line,i){
+    line = line.replace(/\/\/.*/,'');
     var match = line.match(EXAPANSION_POINT_DEF)
-    if(!match){ emit.push(line); return emit; }
+    if(!match){ emit.push({txt: line, lineNum: i+1}); return emit; }
     var expPoint = match[1]
       , option = match[2].trim();
     expansions[expPoint] = expansions[expPoint] || [];
-    expansions[expPoint].push(option);
+    expansions[expPoint].push({txt: option, lineNum: i+1});
     return emit;
   },[]);
 
@@ -71,8 +72,10 @@ function recursivelySettleExpansions(expansions,depth) {
   let nextExpansions = {}
   for(let expKey in expansions) {
     var perms = [];
-    for(let clause of expansions[expKey]) {
-      let expandCount = emitLinePermuations(perms,clause,expansions);
+    for(let {txt, lineNum } of expansions[expKey]) {
+      let outPerms = [];
+      emitLinePermuations(outPerms,txt,expansions,lineNum);
+      outPerms.forEach(x => perms.push({txt: x, lineNum}));
     }
       /*
       //foundExpansions = foundExpansion || (expandCount > 0);
@@ -86,8 +89,8 @@ function recursivelySettleExpansions(expansions,depth) {
   return nextExpansions;
 }
 
-function emitLinePermuations(emit, line, expansions) {
-  let lineAnatomy = parseLineAnatomy(line,expansions);
+function emitLinePermuations(emit, line, expansions, lineNum) {
+  let lineAnatomy = parseLineAnatomy(line,expansions, lineNum);
   emitPermuations(emit ,lineAnatomy,lineAnatomy.length-1,'');
   return lineAnatomy.length;
 }
@@ -105,7 +108,7 @@ function emitPermuations(emit,lineAnatomy,offset,partial) {
 
 // parses a line with some expansions into an array of things that should combinate.
 // LaunchIntent blah [blah] foo [blah] bat => [['LaunchIntent blah '],[1,2,3],[' foo '],[1,2,3],[' bat']]
-function parseLineAnatomy(line,expansions) {
+function parseLineAnatomy(line,expansions,lineNum) {
   var lineAnatomy = []
     , offset = 0
     , match = line.match(EXAPANSION_POINT)
@@ -115,8 +118,8 @@ function parseLineAnatomy(line,expansions) {
     var prior = line.substring(0,match.index);
     if(prior) lineAnatomy.push([prior]);
     var expansion = expansions[match[1]];
-    if(!expansion) throw new Error('Cannot find definitions for expansion [' + match[1] +']')
-    lineAnatomy.push(expansion);
+    if(!expansion) throw new Error(`No definitions for [${match[1]}] on line ${lineNum}`)
+    lineAnatomy.push(expansion.map(x => x.txt));
     line = line.substring(match.index + match[0].length)
     match = line.match(EXAPANSION_POINT);
   }
